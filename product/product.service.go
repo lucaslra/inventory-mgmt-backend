@@ -16,10 +16,12 @@ const productsRouteBasePath = "products"
 func SetupRoutes(apiBasePath string) {
 	productListHandler := http.HandlerFunc(listHandler)
 	productItemHandler := http.HandlerFunc(handler)
+	reportHandler := http.HandlerFunc(handleProductReport)
 
 	http.Handle("/websocket", websocket.Handler(productSocket))
 	http.Handle(fmt.Sprintf("%s/%s", apiBasePath, productsRouteBasePath), cors.Middleware(productListHandler))
 	http.Handle(fmt.Sprintf("%s/%s/", apiBasePath, productsRouteBasePath), cors.Middleware(productItemHandler))
+	http.Handle(fmt.Sprintf("%s/%s/reports", apiBasePath, productsRouteBasePath), cors.Middleware(reportHandler))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +76,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	case http.MethodDelete:
-		deleteProduct(productId)
+		_ = deleteProduct(productId)
 	case http.MethodOptions:
 		return
 	default:
